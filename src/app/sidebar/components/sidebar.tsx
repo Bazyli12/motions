@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { animate, motion, stagger } from "framer-motion";
+import { motion, stagger, useAnimate } from "framer-motion";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useSidebar from "../hooks/use-sidebar";
@@ -70,12 +70,13 @@ const sidebar = [
 const Sidebar = () => {
     const [selected, setSelected] = useState<null | number>(null);
     const { isOpen, setIsOpen } = useSidebar();
+    const [scope, animate] = useAnimate();
     const pathname = usePathname();
 
     useEffect(() => {
         animate([
             [
-                "#sidebar-backdrop",
+                "#backdrop",
                 {
                     opacity: isOpen ? 1 : 0,
                     backgroundColor: isOpen
@@ -89,7 +90,7 @@ const Sidebar = () => {
             isOpen
                 ? [
                       [
-                          "#sidebar-sheet .sidebar-stagger",
+                          "#sheet .stagger",
                           {
                               transform: "translateY(100%)",
                               opacity: 0,
@@ -97,12 +98,12 @@ const Sidebar = () => {
                           { duration: 0.0 },
                       ],
                       [
-                          "#sidebar-sheet",
+                          "#sheet",
                           { width: "450px" },
                           { ease: [0.65, 0, 0.35, 1], duration: 0.5 },
                       ],
                       [
-                          "#sidebar-sheet .sidebar-stagger",
+                          "#sheet .stagger",
                           {
                               transform: "translateY(0%)",
                               opacity: 1,
@@ -116,14 +117,14 @@ const Sidebar = () => {
                   ]
                 : [
                       [
-                          "#sidebar-sheet .sidebar-stagger",
+                          "#sheet .stagger",
                           {
                               opacity: 0,
                           },
                           { duration: 0.1 },
                       ],
                       [
-                          "#sidebar-sheet",
+                          "#sheet",
                           { width: "0" },
                           { ease: "easeInOut", duration: 0.5, delay: -0.1 },
                       ],
@@ -136,18 +137,18 @@ const Sidebar = () => {
     }, [pathname]);
 
     return (
-        <>
+        <div ref={scope}>
             <div
-                id="sidebar-backdrop"
+                id="backdrop"
                 className="fixed pointer-events-none z-40 top-0 left-0 h-screen w-screen"
             />
             <div
-                id="sidebar-sheet"
+                id="sheet"
                 className={cn(
                     "z-50 bg-foreground w-0 fixed left-0 h-screen overflow-hidden py-8"
                 )}
             >
-                <div className="sidebar-stagger pl-10 absolute top-6">
+                <div className="stagger pl-10 absolute top-6">
                     <X
                         className={cn("text-white cursor-pointer size-8")}
                         onClick={() => setIsOpen((isOpen) => !isOpen)}
@@ -155,7 +156,7 @@ const Sidebar = () => {
                 </div>
                 <ul className="px-12 mb-12 pt-24">
                     {sidebar[0].map((item, index) => (
-                        <li key={index} className="sidebar-stagger flex">
+                        <li key={index} className="stagger flex">
                             <motion.div
                                 className="flex"
                                 animate={{
@@ -187,7 +188,7 @@ const Sidebar = () => {
                 </ul>
                 <ul className="px-12">
                     {sidebar[1].map((item, index) => (
-                        <li key={index} className="sidebar-stagger flex">
+                        <li key={index} className="stagger flex">
                             <motion.div
                                 className="flex"
                                 animate={{
@@ -220,7 +221,7 @@ const Sidebar = () => {
                     ))}
                 </ul>
             </div>
-        </>
+        </div>
     );
 };
 
